@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChioRio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --accent: #404040;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #2a2a2a;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: 'Press Start 2P', cursive;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                gap: 15px;
+            }
+        }
+        
+        .widget {
+            background: var(--secondary);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 800px;
+        }
+        
+        @media (max-width: 768px) {
+            .widget {
+                padding: 20px;
+                min-height: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .widget {
+                padding: 15px;
+                border-radius: 12px;
+            }
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--light-gray);
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+        }
+        
+        .server-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            margin-right: 20px;
+            overflow: hidden;
+            color: var(--secondary);
+            border: 3px solid var(--primary);
+        }
+        
+        @media (max-width: 480px) {
+            .server-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 18px;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+        
+        .server-info h1 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .server-info h1 {
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .server-info h1 {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            margin-bottom: 12px;
+        }
+        
+        @media (max-width: 480px) {
+            .status {
+                font-size: 9px;
+                justify-content: center;
+            }
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            background: #4CAF50;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .members-count {
+            background: var(--light-gray);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 9px;
+            display: inline-block;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        @media (max-width: 480px) {
+            .members-count {
+                padding: 8px 12px;
+                font-size: 8px;
+            }
+        }
+        
+        .members-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .members-list {
+                max-height: 200px;
+            }
+        }
+        
+        /* Стилизация скроллбара */
+        .members-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .members-list::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 4px;
+        }
+        
+        .members-list::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        .member {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: var(--light-gray);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+        
+        @media (max-width: 480px) {
+            .member {
+                padding: 10px;
+                margin-bottom: 8px;
+            }
+        }
+        
+        .member:hover {
+            background: var(--medium-gray);
+            transform: translateX(5px);
+        }
+        
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 15px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+        }
+        
+        @media (max-width: 480px) {
+            .member-avatar {
+                width: 40px;
+                height: 40px;
+                margin-right: 10px;
+            }
+        }
+        
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .member-name {
+                font-size: 9px;
+                margin-bottom: 5px;
+            }
+        }
+        
+        .member-status {
+            font-size: 8px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+        }
+        
+        @media (max-width: 480px) {
+            .member-status {
+                font-size: 7px;
+            }
+        }
+        
+        .member-status::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            background: #4CAF50;
+            margin-right: 8px;
+        }
+        
+        .activity {
+            font-size: 8px;
+            color: var(--accent);
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                gap: 20px;
+            }
+        }
+        
+        .qr-section {
+            background: var(--secondary);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .qr-section {
+                padding: 20px;
+            }
+        }
+        
+        .qr-section h2 {
+            margin-bottom: 25px;
+            color: var(--primary);
+            font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            .qr-section h2 {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .qr-section p {
+            font-size: 9px;
+            margin-bottom: 30px;
+            color: var(--accent);
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 480px) {
+            .qr-section p {
+                font-size: 8px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 25px;
+            background: var(--secondary);
+            padding: 15px;
+            border-radius: 12px;
+            border: 3px solid var(--primary);
+        }
+        
+        @media (max-width: 480px) {
+            .qr-code {
+                width: 150px;
+                height: 150px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .join-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--secondary);
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            font-size: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .join-btn {
+                padding: 10px 20px;
+                font-size: 9px;
+            }
+        }
+        
+        .join-btn:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .phrases {
+            background: var(--secondary);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .phrases {
+                padding: 20px;
+            }
+        }
+        
+        .phrases h2 {
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            .phrases h2 {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .phrase {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-style: italic;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--primary);
+            font-size: 9px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 480px) {
+            .phrase {
+                padding: 12px;
+                font-size: 8px;
+                margin-bottom: 10px;
+            }
+        }
+        
+        .phrase:hover {
+            background: var(--medium-gray);
+            transform: translateY(-3px);
+        }
+        
+        .images-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        @media (max-width: 480px) {
+            .images-gallery {
+                gap: 10px;
+                margin-top: 15px;
+            }
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--dark-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 9px;
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 480px) {
+            .gallery-img {
+                height: 60px;
+                font-size: 8px;
+            }
+        }
+        
+        .gallery-img:hover {
+            transform: scale(1.05);
+        }
+        
+        .gallery-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .refresh-btn {
+            background: var(--primary);
+            color: var(--secondary);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid var(--primary);
+            font-size: 10px;
+            font-family: 'Press Start 2P', cursive;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .refresh-btn {
+                padding: 10px 20px;
+                font-size: 9px;
+                margin-top: 15px;
+            }
+        }
+        
+        .refresh-btn:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--accent);
+            font-size: 10px;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #d32f2f;
+            background: rgba(211, 47, 47, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #d32f2f;
+            font-size: 8px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-align: center;
+            position: relative;
+        }
+        
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: var(--primary);
+            margin: 15px auto 0;
+        }
+        
+        /* Стили для игры-кликера */
+        .clicker-game {
+            margin-top: 30px;
+            padding: 25px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            border: 3px solid var(--primary);
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+        }
+        
+        @media (max-width: 768px) {
+            .clicker-game {
+                margin-top: 20px;
+                padding: 20px;
+                min-height: 250px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .clicker-game {
+                padding: 15px;
+                min-height: 200px;
+            }
+        }
+        
+        .clicker-game h2 {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .clicker-game h2 {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .clicker-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .clicker-stats {
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .clicker-stat {
+            background: var(--secondary);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+        }
+        
+        @media (max-width: 480px) {
+            .clicker-stat {
+                padding: 8px 12px;
+                font-size: 9px;
+            }
+        }
+        
+        .clicker-image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            min-height: 150px;
+        }
+        
+        @media (max-width: 480px) {
+            .clicker-image-container {
+                min-height: 120px;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .clicker-image {
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            border-radius: 12px;
+            border: 4px solid var(--primary);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .clicker-image {
+                width: 120px;
+                height: 120px;
+            }
+        }
+        
+        .clicker-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.1s ease;
+        }
+        
+        .clicker-image:active {
+            transform: scale(0.95);
+        }
+        
+        .clicker-image:active img {
+            transform: scale(1.1);
+        }
+        
+        .clicker-upgrades {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .clicker-upgrades {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+        
+        .upgrade-btn {
+            background: var(--primary);
+            color: var(--secondary);
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            font-family: 'Press Start 2P', cursive;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 480px) {
+            .upgrade-btn {
+                padding: 8px;
+                font-size: 7px;
+            }
+        }
+        
+        .upgrade-btn:hover {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+        
+        .upgrade-btn:disabled {
+            background: var(--medium-gray);
+            color: var(--accent);
+            cursor: not-allowed;
+            border-color: var(--accent);
+        }
+        
+        .click-effect {
+            position: absolute;
+            font-size: 12px;
+            font-weight: bold;
+            color: #4CAF50;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        /* Стили для визуализатора звука */
+        .music-player {
+            margin-top: 30px;
+            padding: 25px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            border: 3px solid var(--primary);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 250px;
+        }
+
+        @media (max-width: 768px) {
+            .music-player {
+                margin-top: 20px;
+                padding: 20px;
+                min-height: 220px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .music-player {
+                padding: 15px;
+                min-height: 200px;
+            }
+        }
+
+        .music-player h2 {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .music-player h2 {
+                font-size: 12px;
+                margin-bottom: 12px;
+            }
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .player-controls {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        .play-btn {
+            background: var(--primary);
+            color: var(--secondary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .play-btn {
+                padding: 8px 16px;
+                font-size: 7px;
+                width: 100%;
+            }
+        }
+
+        .play-btn:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .track-info {
+            flex: 1;
+            text-align: center;
+            font-size: 9px;
+            word-break: break-word;
+        }
+
+        @media (max-width: 480px) {
+            .track-info {
+                font-size: 8px;
+                order: -1;
+                width: 100%;
+            }
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .volume-control {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: var(--medium-gray);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        @media (max-width: 480px) {
+            .volume-slider {
+                width: 100px;
+            }
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .visualizer-container {
+            flex: 1;
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            height: 120px;
+        }
+
+        @media (max-width: 480px) {
+            .visualizer-container {
+                height: 100px;
+            }
+        }
+
+        .waveform {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 0 5px;
+        }
+
+        .bar {
+            width: 4px;
+            background: linear-gradient(to top, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.1s ease;
+            min-height: 2px;
+        }
+
+        @media (max-width: 480px) {
+            .bar {
+                width: 3px;
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--medium-gray);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #ff6b6b, #4ecdc4);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 8px;
+            margin-top: 5px;
+            color: var(--accent);
+        }
+
+        @media (max-width: 480px) {
+            .time-display {
+                font-size: 7px;
+            }
+        }
+
+        .station-info {
+            text-align: center;
+            font-size: 8px;
+            color: var(--accent);
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .station-info {
+                font-size: 7px;
+            margin-top: 8px;
+            line-height: 1.4;
+            word-break: break-word;
+            padding: 0 5px;
+            overflow-wrap: break-word;
+                hyphens: auto;
+            }
+        }
+
+        .equalizer {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+            height: 15px;
+        }
+
+        .eq-bar {
+            width: 2px;
+            background: var(--primary);
+            border-radius: 1px;
+        }
+
+        /* Адаптация для очень маленьких экранов */
+        @media (max-width: 360px) {
+            body {
+                padding: 5px;
+            }
+            
+            .widget, .qr-section, .phrases {
+                padding: 12px;
+            }
+            
+            .server-info h1 {
+                font-size: 12px;
+            }
+            
+            .status, .members-count {
+                font-size: 8px;
+            }
+            
+            .section-title {
+                font-size: 11px;
+            }
+            
+            .clicker-image {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .gallery-img {
+                height: 50px;
+                font-size: 7px;
+            }
+            
+            .track-info {
+                font-size: 7px;
+            }
+        }
+
+        /* Предотвращение горизонтального скролла */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="widget">
+            <div class="header">
+                <div class="server-icon">
+                    DS
+                </div>
+                <div class="server-info">
+                    <h1 id="server-name">Discord Server</h1>
+                    <div class="status">
+                        <div class="status-indicator"></div>
+                        <span id="online-count">0</span> дауна онлайн
+                    </div>
+                    <div class="members-count" id="total-members">Всего даунов: 0</div>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Чосики онлайн</h2>
+            
+            <div class="members-list" id="members-list">
+                <div class="loading">Загрузка чосиков...</div>
+            </div>
+            
+            <button class="refresh-btn" id="refresh-btn">Обновить данные</button>
+            
+            <!-- Игра-кликер -->
+            <div class="clicker-game">
+                <h2>Кликер Чосика</h2>
+                <div class="clicker-stats">
+                    <div class="clicker-stat">Клики: <span id="click-count">0</span></div>
+                    <div class="clicker-stat">За клик: <span id="click-power">1</span></div>
+                    <div class="clicker-stat">Авто-клик: <span id="auto-click">0</span>/сек</div>
+                </div>
+                
+                <div class="clicker-image-container">
+                    <div class="clicker-image" id="clicker-image">
+                        <img src="images11.jpg" alt="Кликни меня!" onerror="handleClickerImageError(this)">
+                    </div>
+                </div>
+                
+                <div class="clicker-upgrades">
+                    <button class="upgrade-btn" id="upgrade-power" data-base-cost="10" data-power="1" data-count="0">
+                        Улучшить клик (+1)<br>Ур. <span class="level">0</span><br>Цена: <span class="cost">10</span>
+                    </button>
+                    <button class="upgrade-btn" id="upgrade-auto" data-base-cost="25" data-power="1" data-count="0">
+                        Авто-клик (+1/сек)<br>Ур. <span class="level">0</span><br>Цена: <span class="cost">25</span>
+                    </button>
+                    <button class="upgrade-btn" id="upgrade-power2" data-base-cost="50" data-power="5" data-count="0">
+                        Сильный клик (+5)<br>Ур. <span class="level">0</span><br>Цена: <span class="cost">50</span>
+                    </button>
+                    <button class="upgrade-btn" id="upgrade-auto2" data-base-cost="100" data-power="5" data-count="0">
+                        Быстрый авто (+5/сек)<br>Ур. <span class="level">0</span><br>Цена: <span class="cost">100</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Визуализатор звука -->
+            <div class="music-player">
+                <h2>Дорожное Радио</h2>
+                <div class="player-controls">
+                    <button class="play-btn" id="play-btn">▶ СТАРТ</button>
+                    <div class="track-info" id="track-info">Выберите станцию</div>
+                    <div class="volume-control">
+                        <span style="font-size: 8px;">🔊</span>
+                        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="50">
+                    </div>
+                </div>
+                
+                <div class="visualizer-container" id="visualizer">
+                    <div class="waveform" id="waveform"></div>
+                    <div class="equalizer" id="equalizer">
+                        <div class="eq-bar" style="height: 5px;"></div>
+                        <div class="eq-bar" style="height: 8px;"></div>
+                        <div class="eq-bar" style="height: 11px;"></div>
+                        <div class="eq-bar" style="height: 6px;"></div>
+                        <div class="eq-bar" style="height: 9px;"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="time-display">
+                    <span id="current-time">0:00</span>
+                    <span id="total-time">0:00</span>
+                </div>
+                
+                <div class="station-info">
+                    <div>🎵 ДОРОЖНОЕ РАДИО 🎵</div>
+                    <div>Частота: 107.8 FM</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <div class="qr-section">
+                <h2>Стань нашим "Гостем"</h2>
+                <p>Отсканируй QR-код чтобы попасть на серваЧОК</p>
+                <div class="qr-code">
+                    <!-- QR code will be generated here -->
+                </div>
+                <a href="https://discord.gg/a9TPQJbzdQ" target="_blank" class="join-btn">Присоединиться сейчас</a>
+            </div>
+            
+            <div class="phrases">
+                <h2>Почему он?</h2>
+                <div class="phrase">"Я вообще один иду"</div>
+                <div class="phrase">"Лучше плавать по волнам чем биться о скалы"</div>
+                <div class="phrase">"Что."</div>
+                <div class="phrase">"Да иди нахуй а бля"</div>
+                <div class="phrase">"Я не выйду у меня гости"</div>
+                
+                <h2 style="margin-top: 30px;">Наши изображения</h2>
+                <div class="images-gallery">
+                    <div class="gallery-img">
+                        <img src="images1.jpg" alt="Image 1" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 1';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images2.jpg" alt="Image 2" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 2';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images3.jpg" alt="Image 3" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 3';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images4.jpg" alt="Image 4" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 4';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images5.jpg" alt="Image 5" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 5';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images6.jpg" alt="Image 6" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 6';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images7.jpg" alt="Image 7" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 7';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images8.jpg" alt="Image 8" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 8';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images9.jpg" alt="Image 9" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 9';">
+                    </div>
+                    <div class="gallery-img">
+                        <img src="images10.jpg" alt="Image 10" onerror="this.style.display='none'; this.parentElement.innerHTML='Image 10';">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const serverId = '963808473378852945';
+            const apiUrl = `https://discord.com/api/guilds/${serverId}/widget.json`;
+            const membersList = document.getElementById('members-list');
+            const serverName = document.getElementById('server-name');
+            const onlineCount = document.getElementById('online-count');
+            const totalMembers = document.getElementById('total-members');
+            const refreshBtn = document.getElementById('refresh-btn');
+            const serverIcon = document.querySelector('.server-icon');
+            const qrCode = document.querySelector('.qr-code');
+            
+            // Function to handle clicker image error
+            function handleClickerImageError(element) {
+                console.log('Изображение кликера не найдено');
+                element.style.display = 'none';
+                const parent = element.parentElement;
+                parent.innerHTML = 'КЛИКАЙ СЮДА!';
+                parent.style.display = 'flex';
+                parent.style.alignItems = 'center';
+                parent.style.justifyContent = 'center';
+                parent.style.fontSize = '16px';
+                parent.style.color = 'var(--primary)';
+                parent.style.background = 'var(--medium-gray)';
+            }
+            
+            // Generate QR code
+            function generateQRCode() {
+                const qrUrl = `https://discord.gg/a9TPQJbzdQ`;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrUrl)}`;
+                
+                const img = document.createElement('img');
+                img.src = qrApiUrl;
+                img.alt = 'QR Code для вступления на Discord сервер';
+                qrCode.appendChild(img);
+            }
+            
+            // Fetch server data with CORS workaround
+            async function fetchServerData() {
+                try {
+                    membersList.innerHTML = '<div class="loading">Загрузка участников...</div>';
+                    
+                    const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                    const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+                    
+                    if (!response.ok) {
+                        throw new Error('Не удалось загрузить данные сервера');
+                    }
+                    
+                    const data = await response.json();
+                    displayServerData(data);
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    showDemoData();
+                }
+            }
+            
+            // Display server data
+            function displayServerData(data) {
+                serverName.textContent = data.name;
+                onlineCount.textContent = data.presence_count;
+                
+                if (data.icon) {
+                    serverIcon.innerHTML = '';
+                    const iconImg = document.createElement('img');
+                    iconImg.src = data.icon;
+                    iconImg.alt = `Иконка сервера ${data.name}`;
+                    serverIcon.appendChild(iconImg);
+                } else {
+                    serverIcon.textContent = data.name.charAt(0);
+                }
+                
+                if (data.members && data.members.length > 0) {
+                    membersList.innerHTML = '';
+                    
+                    const sortedMembers = data.members.sort((a, b) => {
+                        if (a.status !== b.status) {
+                            return a.status === 'online' ? -1 : 1;
+                        }
+                        return a.username.localeCompare(b.username);
+                    });
+                    
+                    sortedMembers.forEach(member => {
+                        const memberElement = document.createElement('div');
+                        memberElement.className = 'member';
+                        
+                        const avatarUrl = member.avatar_url || 'https://cdn.discordapp.com/embed/avatars/0.png';
+                        const statusColor = getStatusColor(member.status);
+                        
+                        memberElement.innerHTML = `
+                            <div class="member-avatar">
+                                <img src="${avatarUrl}" alt="${member.username}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                            </div>
+                            <div class="member-info">
+                                <div class="member-name">${member.username}</div>
+                                <div class="member-status" style="color: ${statusColor}">
+                                    <span style="background: ${statusColor}; width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 8px;"></span>
+                                    ${getStatusText(member.status)}
+                                </div>
+                                ${member.activity ? `<div class="activity">${member.activity.name}</div>` : ''}
+                            </div>
+                        `;
+                        
+                        membersList.appendChild(memberElement);
+                    });
+                    
+                    totalMembers.textContent = `Всего участников: ${data.members.length}`;
+                } else {
+                    membersList.innerHTML = '<div class="loading">Нет участников онлайн</div>';
+                }
+            }
+            
+            // Show demo data if API is not available
+            function showDemoData() {
+                serverName.textContent = "Discord Server";
+                onlineCount.textContent = "12";
+                totalMembers.textContent = "Всего участников: 12";
+                serverIcon.textContent = "DS";
+                
+                const demoMembers = [
+                    { username: "User_One", status: "online", activity: { name: "Playing Minecraft" } },
+                    { username: "Gamer_Pro", status: "online", activity: { name: "Streaming" } },
+                    { username: "Cool_Dude", status: "idle" },
+                    { username: "Streamer_Girl", status: "online", activity: { name: "Just Chatting" } },
+                    { username: "Code_Master", status: "dnd" },
+                    { username: "Design_Queen", status: "online" }
+                ];
+                
+                membersList.innerHTML = '';
+                
+                demoMembers.forEach(member => {
+                    const memberElement = document.createElement('div');
+                    memberElement.className = 'member';
+                    
+                    const statusColor = getStatusColor(member.status);
+                    const avatarUrl = `https://cdn.discordapp.com/embed/avatars/${Math.floor(Math.random() * 5)}.png`;
+                    
+                    memberElement.innerHTML = `
+                        <div class="member-avatar">
+                            <img src="${avatarUrl}" alt="${member.username}">
+                        </div>
+                        <div class="member-info">
+                            <div class="member-name">${member.username}</div>
+                            <div class="member-status" style="color: ${statusColor}">
+                                <span style="background: ${statusColor}; width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 8px;"></span>
+                                ${getStatusText(member.status)}
+                            </div>
+                            ${member.activity ? `<div class="activity">${member.activity.name}</div>` : ''}
+                        </div>
+                    `;
+                    
+                    membersList.appendChild(memberElement);
+                });
+                
+                membersList.innerHTML += '<div class="error">Используются демо-данные. API сервера недоступно.</div>';
+            }
+            
+            // Get status color
+            function getStatusColor(status) {
+                const statusColors = {
+                    'online': '#4CAF50',
+                    'idle': '#FF9800',
+                    'dnd': '#F44336',
+                    'offline': '#9E9E9E'
+                };
+                return statusColors[status] || '#9E9E9E';
+            }
+            
+            // Get status text in Russian
+            function getStatusText(status) {
+                const statusMap = {
+                    'online': 'В сети',
+                    'idle': 'Неактивен',
+                    'dnd': 'Не беспокоить',
+                    'offline': 'Не в сети'
+                };
+                return statusMap[status] || status;
+            }
+            
+            // ========== КЛИКЕР ИГРА ==========
+            let clickCount = 0;
+            let clickPower = 1;
+            let autoClickPower = 0;
+            let autoClickInterval;
+            
+            const clickCountElement = document.getElementById('click-count');
+            const clickPowerElement = document.getElementById('click-power');
+            const autoClickElement = document.getElementById('auto-click');
+            const clickerImage = document.getElementById('clicker-image');
+            const upgradeButtons = document.querySelectorAll('.upgrade-btn');
+            
+            function initClickerGame() {
+                const savedData = localStorage.getItem('clickerGameData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    clickCount = data.clickCount || 0;
+                    clickPower = data.clickPower || 1;
+                    autoClickPower = data.autoClickPower || 0;
+                    
+                    upgradeButtons.forEach(button => {
+                        const upgradeId = button.id;
+                        if (data.upgrades && data.upgrades[upgradeId]) {
+                            button.setAttribute('data-count', data.upgrades[upgradeId]);
+                        }
+                    });
+                }
+                
+                updateClickerUI();
+                startAutoClicker();
+                
+                clickerImage.addEventListener('click', handleClick);
+                
+                upgradeButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const baseCost = parseInt(this.getAttribute('data-base-cost'));
+                        const power = parseInt(this.getAttribute('data-power'));
+                        const count = parseInt(this.getAttribute('data-count'));
+                        
+                        const cost = Math.floor(baseCost * Math.pow(1.5, count));
+                        
+                        if (clickCount >= cost) {
+                            clickCount -= cost;
+                            const newCount = count + 1;
+                            this.setAttribute('data-count', newCount);
+                            
+                            if (this.id.includes('auto')) {
+                                autoClickPower += power;
+                            } else {
+                                clickPower += power;
+                            }
+                            
+                            updateClickerUI();
+                            saveGameData();
+                        }
+                    });
+                });
+            }
+            
+            function handleClick(event) {
+                clickCount += clickPower;
+                updateClickerUI();
+                saveGameData();
+                
+                const clickEffect = document.createElement('div');
+                clickEffect.className = 'click-effect';
+                clickEffect.textContent = `+${clickPower}`;
+                const rect = clickerImage.getBoundingClientRect();
+                clickEffect.style.left = `${event.clientX - rect.left}px`;
+                clickEffect.style.top = `${event.clientY - rect.top}px`;
+                clickerImage.appendChild(clickEffect);
+                
+                setTimeout(() => {
+                    clickEffect.remove();
+                }, 1000);
+            }
+            
+            function startAutoClicker() {
+                if (autoClickInterval) {
+                    clearInterval(autoClickInterval);
+                }
+                
+                autoClickInterval = setInterval(() => {
+                    if (autoClickPower > 0) {
+                        clickCount += autoClickPower;
+                        updateClickerUI();
+                        saveGameData();
+                    }
+                }, 1000);
+            }
+            
+            function updateClickerUI() {
+                clickCountElement.textContent = clickCount;
+                clickPowerElement.textContent = clickPower;
+                autoClickElement.textContent = autoClickPower;
+                
+                upgradeButtons.forEach(button => {
+                    const baseCost = parseInt(button.getAttribute('data-base-cost'));
+                    const count = parseInt(button.getAttribute('data-count'));
+                    const power = parseInt(button.getAttribute('data-power'));
+                    const cost = Math.floor(baseCost * Math.pow(1.5, count));
+                    
+                    const levelElement = button.querySelector('.level');
+                    const costElement = button.querySelector('.cost');
+                    
+                    if (levelElement) levelElement.textContent = count;
+                    if (costElement) costElement.textContent = cost;
+                    
+                    button.disabled = clickCount < cost;
+                    
+                    let mainText = '';
+                    if (button.id.includes('auto')) {
+                        mainText = `Авто-клик (+${power}/сек)`;
+                    } else {
+                        mainText = `Улучшить клик (+${power})`;
+                    }
+                    
+                    button.innerHTML = `${mainText}<br>Ур. <span class="level">${count}</span><br>Цена: <span class="cost">${cost}</span>`;
+                });
+            }
+            
+            function saveGameData() {
+                const upgrades = {};
+                upgradeButtons.forEach(button => {
+                    upgrades[button.id] = parseInt(button.getAttribute('data-count'));
+                });
+                
+                const gameData = {
+                    clickCount: clickCount,
+                    clickPower: clickPower,
+                    autoClickPower: autoClickPower,
+                    upgrades: upgrades
+                };
+                localStorage.setItem('clickerGameData', JSON.stringify(gameData));
+            }
+            
+            function resetGame() {
+                if (confirm('Точно сбросить прогресс игры?')) {
+                    clickCount = 0;
+                    clickPower = 1;
+                    autoClickPower = 0;
+                    
+                    upgradeButtons.forEach(button => {
+                        button.setAttribute('data-count', '0');
+                    });
+                    
+                    localStorage.removeItem('clickerGameData');
+                    updateClickerUI();
+                }
+            }
+            
+            document.querySelector('.clicker-game h2').addEventListener('dblclick', resetGame);
+
+            // ========== ВИЗУАЛИЗАТОР ЗВУКА ==========
+            const playBtn = document.getElementById('play-btn');
+            const volumeSlider = document.getElementById('volume-slider');
+            const trackInfo = document.getElementById('track-info');
+            const waveform = document.getElementById('waveform');
+            const progress = document.getElementById('progress');
+            const currentTime = document.getElementById('current-time');
+            const totalTime = document.getElementById('total-time');
+            const equalizer = document.getElementById('equalizer');
+
+            let isPlaying = false;
+            let bars = [];
+            let eqBars = [];
+            let animationId;
+            let startTime;
+            let trackDuration = 180; // 3 минуты в секундах
+            let currentTrackIndex = 0;
+
+            // Список треков
+            const tracks = [
+                { artist: "Мелстрой", title: "Бамбамбам", duration: 183 },
+                { artist: "Мелстрой", title: "Изи бриджи", duration: 176 },
+                { artist: "Айсгергерт", title: "Выходите бесы", duration: 192 },
+                { artist: "Кизару", title: "Моя тень и я", duration: 169 }
+            ];
+
+            // Создаем бары для визуализатора
+            function createBars() {
+                waveform.innerHTML = '';
+                bars = [];
+                
+                // Адаптивное количество баров в зависимости от ширины экрана
+                const barCount = window.innerWidth < 480 ? 30 : 50;
+                
+                for (let i = 0; i < barCount; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'bar';
+                    bar.style.height = '2px';
+                    waveform.appendChild(bar);
+                    bars.push(bar);
+                }
+
+                // Анимируем эквалайзер
+                const eqElements = equalizer.querySelectorAll('.eq-bar');
+                eqBars = Array.from(eqElements);
+                animateEqualizer();
+            }
+
+            function animateEqualizer() {
+                if (!isPlaying) return;
+                
+                eqBars.forEach((bar, index) => {
+                    const height = Math.random() * 12 + 3;
+                    bar.style.height = `${height}px`;
+                    bar.style.transition = `height ${0.1 + index * 0.05}s ease`;
+                });
+                
+                setTimeout(() => animateEqualizer(), 200);
+            }
+
+            function updateProgress() {
+                if (!isPlaying) return;
+                
+                const elapsed = (Date.now() - startTime) / 1000;
+                const currentTrack = tracks[currentTrackIndex];
+                const progressPercent = (elapsed % currentTrack.duration) / currentTrack.duration * 100;
+                
+                progress.style.width = `${progressPercent}%`;
+                
+                // Обновляем время
+                const currentSeconds = Math.floor(elapsed % currentTrack.duration);
+                const minutes = Math.floor(currentSeconds / 60);
+                const seconds = currentSeconds % 60;
+                currentTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                const totalMinutes = Math.floor(currentTrack.duration / 60);
+                const totalSeconds = currentTrack.duration % 60;
+                totalTime.textContent = `${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
+                
+                // Смена трека по завершению
+                if (elapsed % currentTrack.duration < 0.1 && elapsed > 1) {
+                    nextTrack();
+                }
+                
+                requestAnimationFrame(updateProgress);
+            }
+
+            function simulateAudioAnalysis() {
+                if (!isPlaying) return;
+                
+                bars.forEach((bar, index) => {
+                    // Создаем реалистичную волну звука
+                    const baseHeight = Math.sin(Date.now() / 200 + index * 0.3) * 20 + 25;
+                    const randomVariation = Math.random() * 15;
+                    const height = baseHeight + randomVariation;
+                    
+                    bar.style.height = `${Math.max(2, height)}px`;
+                    bar.style.transition = 'height 0.1s ease';
+                });
+                
+                animationId = requestAnimationFrame(simulateAudioAnalysis);
+            }
+
+            function playMusic() {
+                isPlaying = true;
+                playBtn.textContent = '⏸ ПАУЗА';
+                startTime = Date.now();
+                
+                // Запускаем визуализацию
+                simulateAudioAnalysis();
+                updateProgress();
+                
+                // Показываем текущий трек
+                updateTrackInfo();
+            }
+
+            function pauseMusic() {
+                isPlaying = false;
+                playBtn.textContent = '▶ СТАРТ';
+                
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                
+                // Сбрасываем бары к минимальной высоте
+                bars.forEach(bar => {
+                    bar.style.height = '2px';
+                });
+            }
+
+            function nextTrack() {
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+                startTime = Date.now();
+                updateTrackInfo();
+            }
+
+            function updateTrackInfo() {
+                const currentTrack = tracks[currentTrackIndex];
+                trackInfo.textContent = `${currentTrack.artist} - ${currentTrack.title}`;
+            }
+
+            function togglePlay() {
+                if (isPlaying) {
+                    pauseMusic();
+                } else {
+                    playMusic();
+                }
+            }
+
+            function initMusicPlayer() {
+                createBars();
+                
+                playBtn.addEventListener('click', togglePlay);
+                
+                volumeSlider.addEventListener('input', function() {
+                    const volume = this.value / 100;
+                    // Здесь можно добавить реальное управление громкостью
+                    console.log('Громкость:', volume);
+                });
+
+                // Автозапуск через 2 секунды
+                setTimeout(() => {
+                    playMusic();
+                }, 2000);
+
+                // Адаптация при изменении размера окна
+                window.addEventListener('resize', createBars);
+            }
+            
+            // Event listeners
+            refreshBtn.addEventListener('click', fetchServerData);
+            
+            // Initial load
+            fetchServerData();
+            generateQRCode();
+            initClickerGame();
+            initMusicPlayer();
+            
+            // Auto-refresh every 60 seconds
+            setInterval(fetchServerData, 60000);
+        });
+    </script>
+</body>
+</html>
